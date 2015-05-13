@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -56,7 +57,9 @@ public class Main {
             for (int j = 0; j < octallElement.length(); j++) {
                 element += (Integer.parseInt(String.valueOf(octallElement.charAt(j))) - 1);
             }
-            result += String.valueOf(alphabet.charAt(Integer.parseInt(element, 8) - 1));
+            String letter = String.valueOf(alphabet.charAt(Integer.parseInt(element, 8) - 1));
+            /*System.out.println(letter);*/
+            result += letter;
         }
 
         return result;
@@ -87,17 +90,11 @@ public class Main {
 
         if (codedMessage != null) {
             String result = "";
-            int nLength = n.length();
-            int rounder = 0;
-            if (codedMessage.length() % (nLength - 1) == 0) {
-                rounder = 0;
-            } else {
-                rounder = 1;
-            }
-            int blocksNumber = codedMessage.length() / (nLength - 1) + rounder;
+            System.out.println("Блоки:");
             while (true) {
                 int size = calculateSize(codedMessage, n);
                 String block = codedMessage.substring(0, size);
+                System.out.println(block);
                 MyBigInteger blockBigInt = new MyBigInteger(block);
                 result += blockBigInt.pow(e, n).toString() + " ";
                 codedMessage = codedMessage.substring(size, codedMessage.length());
@@ -129,7 +126,7 @@ public class Main {
         MyBigInteger e = new MyBigInteger();
         e = e.generateRandom(m);
         while (true) {
-            if (coPrime(e, m)) {
+            if (coPrime(e, m) && e.compareTo(MyBigInteger.ONE) != 0) {
                 break;
             }
             if (e.equals(m)) {
@@ -141,7 +138,7 @@ public class Main {
         MyBigInteger d = e.modInverse(m);
         System.out.println("e: " + e);
         System.out.println("d: " + d);
-        return new Pair<>(n, new Pair(e, d));
+        return new Pair<MyBigInteger, Pair<MyBigInteger, MyBigInteger>>(n, new Pair(e, d));
     }
 
     private static boolean coPrime(MyBigInteger a, MyBigInteger b) {
@@ -169,7 +166,7 @@ public class Main {
         }
         while ((copyB.compareTo(MyBigInteger.ZERO)) != 0) {
             MyBigInteger temp = copyB;
-            copyB = (copyA.div(copyB)).remainder;
+            copyB = (copyA.div(copyB)).r;
             copyA = temp;
         }
         return copyA;
@@ -181,14 +178,15 @@ public class Main {
         for (int i = 0; i < message.length(); i++) {
             char character = message.toLowerCase().charAt(i);
             int index = alphabet.indexOf(character) + 1;
-            if (index < 0) {
+            if (index < 1) {
                 System.out.println("Сообщение содержит недопустимый символ");
+                return null;
             }
             String hexIndex = Integer.toOctalString(index);
             int codedMessageLength = hexIndex.length();
             if (codedMessageLength < messageSize) {
                 for (int j = 0; j < messageSize - codedMessageLength; j++) {
-                    hexIndex = "0"+hexIndex;
+                    hexIndex = "0" + hexIndex;
                 }
             }
             for (int j = 0; j < hexIndex.length(); j++) {

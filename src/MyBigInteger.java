@@ -283,7 +283,7 @@ public class MyBigInteger implements Comparable<MyBigInteger> {
 
         BigIntegerDivisionResult normalization = MyBigInteger.div(u, d, val.sign);
 
-        return new BigIntegerDivisionResult(q, normalization.quotient);
+        return new BigIntegerDivisionResult(q, normalization.q);
 
     }
 
@@ -292,13 +292,13 @@ public class MyBigInteger implements Comparable<MyBigInteger> {
         MyBigInteger b = new MyBigInteger("1");
         while (k.compareTo(ZERO) > 0) {
             BigIntegerDivisionResult q = MyBigInteger.div(k, 2, true);
-            if (q.remainder.compareTo(ZERO) == 0) {
-                k = q.quotient;
+            if (q.r.compareTo(ZERO) == 0) {
+                k = q.q;
                 a = a.times(a);
-                a = a.div(n).remainder;
+                a = a.div(n).r;
             } else {
                 k = k.minus(ONE);
-                b = b.times(a).div(n).remainder;
+                b = b.times(a).div(n).r;
             }
         }
         return b;
@@ -394,13 +394,13 @@ public class MyBigInteger implements Comparable<MyBigInteger> {
     private boolean miller(MyBigInteger a, MyBigInteger n) {
         MyBigInteger d = n.minus(MyBigInteger.ONE);
         int s = 0;
-        MyBigInteger q = d.div(new MyBigInteger("2")).quotient;
-        MyBigInteger r = d.div(new MyBigInteger("2")).remainder;
+        MyBigInteger q = d.div(new MyBigInteger("2")).q;
+        MyBigInteger r = d.div(new MyBigInteger("2")).r;
         while (r.compareTo(MyBigInteger.ZERO) == 0) {
             s++;
             d = q;
-            MyBigInteger qlocal = q.div(new MyBigInteger("2")).quotient;
-            MyBigInteger rlocal = q.div(new MyBigInteger("2")).remainder;
+            MyBigInteger qlocal = q.div(new MyBigInteger("2")).q;
+            MyBigInteger rlocal = q.div(new MyBigInteger("2")).r;
             q = qlocal;
             r = rlocal;
         }
@@ -443,7 +443,7 @@ public class MyBigInteger implements Comparable<MyBigInteger> {
 
     public MyBigInteger modInverse(MyBigInteger m) {
         MyBigInteger x = extendGCD(this, m);
-        MyBigInteger inverse = (x.plus(m).div(m)).remainder;
+        MyBigInteger inverse = (x.plus(m).div(m)).r;
         if (!inverse.isPositive()) {
             inverse = inverse.plus(m);
         }
@@ -460,8 +460,8 @@ public class MyBigInteger implements Comparable<MyBigInteger> {
 
         while (r.compareTo(MyBigInteger.ZERO) > 0) {
             MyBigInteger tempR = r;
-            MyBigInteger q = lastR.div(r).quotient;
-            MyBigInteger re = lastR.div(r).remainder;
+            MyBigInteger q = lastR.div(r).q;
+            MyBigInteger re = lastR.div(r).r;
             lastR = tempR;
             r = re;
             MyBigInteger tempX = x;
@@ -477,22 +477,22 @@ public class MyBigInteger implements Comparable<MyBigInteger> {
     }
 
     static class BigIntegerDivisionResult {
-        MyBigInteger quotient;
+        MyBigInteger q;
 
-        MyBigInteger remainder;
+        MyBigInteger r;
 
         public BigIntegerDivisionResult(MyBigInteger quotient, MyBigInteger remainder) {
-            this.quotient = quotient;
-            this.remainder = remainder;
+            this.q = quotient;
+            this.r = remainder;
         }
 
         public MyBigInteger component1() {
-            return quotient;
+            return q;
         }
 
 
         public MyBigInteger component2() {
-            return remainder;
+            return r;
         }
     }
 }
